@@ -2,6 +2,7 @@ from django.db import models
 from django.utils.text import slugify
 from django.contrib.auth.models import User
 import uuid
+from django.core.exceptions import ValidationError
 
 
 class Isbn(models.Model):
@@ -18,12 +19,16 @@ class Category(models.Model):
 
     def __str__(self):
         return self.name
+    def clean(self) -> None:
+        if len(self.name) < 2:
+            raise ValidationError('Category name must be more than 2 characters')
+        return super().clean()
 
 
 class Book(models.Model):
     author_name = models.CharField(max_length=30)
     genre = models.CharField(max_length=15)
-    title = models.CharField(max_length=100, unique=True)
+    title = models.CharField(max_length=50,unique=True)
     description = models.TextField()
     rate = models.IntegerField()
     views = models.IntegerField()
@@ -39,3 +44,8 @@ class Book(models.Model):
     
     def __str__(self):
         return self.author_name
+    
+    def clean(self):
+        if len(self.title) < 10:
+            raise ValidationError("Title must be more than 10 characters")
+        return super().clean()
