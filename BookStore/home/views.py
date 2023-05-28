@@ -2,8 +2,9 @@ from django.shortcuts import render, redirect
 from django.views.decorators.csrf import csrf_protect
 from home.models import Book
 from .form import BookForm
+from django.contrib.auth.decorators import login_required
 
-
+@login_required(login_url='/user/login')
 def index(request):
     """
     Returns a rendered HTML template displaying a list of books.
@@ -18,7 +19,7 @@ def index(request):
     books = Book.objects.all().values()
     return render(request, "home/index.html", {"books": books})
 
-
+@login_required(login_url='/user/login')
 def show(request, id):
     """
     Returns a rendered HTML template displaying the details of a specific book.
@@ -35,7 +36,7 @@ def show(request, id):
     book = Book.objects.get(pk=id)
     return render(request, "home/show.html", {"book": book})
 
-
+@login_required(login_url='/user/login')
 def edit(request, id):
     """
     Returns A rendered HTML template displaying form to edit specific book
@@ -53,7 +54,7 @@ def edit(request, id):
     form = BookForm(instance=book)
     return render(request, "home/edit.html", {'form':form , 'book':book})
 
-
+@login_required(login_url='/user/login')
 def create(request):
     """
     Returns a rendered HTML template displaying the form to create bew book.
