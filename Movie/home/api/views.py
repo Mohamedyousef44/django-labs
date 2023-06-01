@@ -1,6 +1,7 @@
 from django.shortcuts import get_object_or_404
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from rest_framework import status
 from home.models import Movie
 from .seralizers import MovieSerializer
 
@@ -9,13 +10,14 @@ def movie_list(request):
     if request.method == 'GET':
         movies = Movie.objects.all()
         serializer = MovieSerializer(movies, many=True)
-        return Response(serializer.data)
+        return Response(data=serializer.data, status=status.HTTP_200_OK)
+    
     elif request.method == 'POST':
         serializer = MovieSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data, status=201)
-        return Response(serializer.errors, status=400)
+            return Response(data=serializer.data, status=status.HTTP_201_OK)
+        return Response(data=serializer.errors, status=status.HTTP_400_OK)
 
 @api_view(['GET', 'PUT', 'PATCH', 'DELETE'])
 def movie_detail(request, pk):
